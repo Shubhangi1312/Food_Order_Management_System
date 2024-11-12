@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://tse1.mm.bing.net/th?id=OIP.lhmGSPzrUasutwy-fXhHKwHaE0&pid=Api&P=0&h=220') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .login-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin: 0 0 20px;
+            color: #333;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #6a11cb;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2575fc;
+        }
+        .signup-link {
+            margin-top: 20px;
+        }
+        .signup-link a {
+            color: #6a11cb;
+            text-decoration: none;
+        }
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Welcome Back!</h2>
+            <p>Please log in to your account</p>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" placeholder="Username" id="username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" placeholder="Password" id="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <p class="signup-link">Don't have an account? <a href="signup.html">Sign Up</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Send the login request to the backend
+            fetch("http://localhost:8080/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => {
+                console.log("Response status:", response.status); // Log the response status
+                return response.json(); // Parse the response as JSON
+            })
+            .then(data => {
+                if (data.error) { // Check if there is an error in the response
+                    throw new Error(data.error); // Throw an error to be caught below
+                }
+                // Store the user's data in localStorage
+                localStorage.setItem("username", data.username);
+                localStorage.setItem("email", data.email); // Store any other user data
+                alert("Login successful!");
+                window.location.href = "dashbored.html"; // Redirect to the dashboard page
+            })
+            .catch(error => {
+                alert("Login failed! " + error.message); // Display the error message
+            });
+        });
+    </script>
+</body>
+</html>

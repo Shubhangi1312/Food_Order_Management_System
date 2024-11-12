@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Food Order Management System</title>
+    <style>
+        /* CSS Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-image: url('https://via.placeholder.com/1200x800'); /* Use a new background for dashboard */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+        }
+
+        .navbar .logo {
+            font-size: 1.5em;
+        }
+
+        .navbar nav a {
+            color: #fff;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .search-container input[type="text"] {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 300px;
+            font-size: 1em;
+        }
+
+        .search-container button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007acc;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .food-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .food-item {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 10px;
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .food-item:hover {
+            transform: scale(1.05);
+        }
+
+        .food-item img {
+            width: 100%;
+            height: 120px;
+            border-radius: 5px;
+        }
+
+        .food-item h3 {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .food-item p {
+            color: #666;
+        }
+
+        .food-item .price {
+            font-weight: bold;
+            color: #007acc;
+        }
+
+        .food-item button {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">DASHBOARD</div>
+        <nav>
+            <a href="profile.html">Profile</a>
+            <a href="index.html">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" placeholder="Search food items..." id="searchInput">
+        <button onclick="searchFood()">Search</button>
+    </div>
+
+    <!-- Food Items List -->
+    <div class="food-list" id="foodList"></div>
+
+    <!-- JavaScript -->
+    <script>
+        const foodItems = [
+            { name: 'Pizza', description: 'Cheesy pizza with fresh toppings.', img: 'https://tse2.mm.bing.net/th?id=OIP.qQ9CCtjHHDqs8o-H3j8XCAHaEo&pid=Api&P=0&h=220', price: '199.00' },
+            { name: 'Burger', description: 'Juicy burger with crispy lettuce.', img: 'https://tse4.mm.bing.net/th?id=OIP.4s5KjPm5DYkfEkyS11kttQHaE8&pid=Api&P=0&h=220', price: '8.50' },
+            { name: 'Coffee', description: 'Freshly brewed coffee to start your day.', img: 'https://tse4.mm.bing.net/th?id=OIP.PGflPWglidy4zgLdOsHiDAHaEo&pid=Api&P=0&h=220', price: '3.00' },
+            { name: 'Pasta', description: 'Classic Italian pasta with marinara sauce.', img: 'https://cdn.pixabay.com/photo/2022/09/24/07/31/pasta-7475756_1280.jpg', price: '12.00' },
+            { name: 'Ice Cream', description: 'Creamy vanilla ice cream with chocolate syrup.', img: 'https://tse2.mm.bing.net/th?id=OIP.2BuhOZkeclmfBP0BwdmEaAHaNK&pid=Api&P=0&h=220', price: '4.50' },
+            { name: 'Sushi', description: 'Fresh sushi rolls with wasabi.', img: 'https://tse1.mm.bing.net/th?id=OIP.7HHitFam_F96DnQ4a2v6oAHaE8&pid=Api&P=0&h=220', price: '15.00' },
+            { name: 'Tacos', description: 'Spicy tacos with assorted toppings.', img: 'https://tse1.mm.bing.net/th?id=OIP.8Qq2G_6nypMLS4-h_S0QRQHaEz&pid=Api&P=0&h=220', price: '7.00' },
+            { name: 'Salad', description: 'Fresh garden salad with vinaigrette.', img: 'https://tse1.mm.bing.net/th?id=OIP.mm5b17ms8kv6xY_XmPSe6gHaE8&pid=Api&P=0&h=220', price: '5.00' },
+            { name: 'Fries', description: 'Crispy french fries with ketchup.', img: 'https://tse4.mm.bing.net/th?id=OIP.zzo8YeekWlcdId4Y1jOR4wHaJ0&pid=Api&P=0&h=220', price: '2.50' },
+            { name: 'Steak', description: 'Grilled steak with herbs and spices.', img: 'https://tse2.mm.bing.net/th?id=OIP.FsrY7i8sHJ_P3shETIrs-wHaEn&pid=Api&P=0&h=220', price: '20.00' },
+            { name: 'Smoothie', description: 'Fruit smoothie for a refreshing drink.', img: 'https://tse3.mm.bing.net/th?id=OIP.zQeIwzH4HDjcaM1ISFTEpAHaE8&pid=Api&P=0&h=220', price: '6.00' },
+            { name: 'Cupcakes', description: 'Delicious cupcakes with cream frosting.', img: 'https://tse1.mm.bing.net/th?id=OIP.GmPpLo11lCp_zm8q6ISMPQHaEo&pid=Api&P=0&h=220', price: '2.00' },
+            { name: 'Sandwich', description: 'Hearty sandwich with fresh ingredients.', img: 'https://tse3.mm.bing.net/th?id=OIP.qG31Brkca8tQsiCYbupFxAHaE8&pid=Api&P=0&h=220', price: '5.50' },
+            { name: 'Pancakes', description: 'Fluffy pancakes with maple syrup.', img: 'https://tse2.mm.bing.net/th?id=OIP.Z3fFcn0_1Pks8x-gaiA1RgHaJQ&pid=Api&P=0&h=220', price: '7.00' },
+            { name: 'Brownies', description: 'Chewy chocolate brownies.', img: 'https://via.placeholder.com/200', price: '3.50' },
+            { name: 'Burrito', description: 'Stuffed burrito with rice and beans.', img: 'https://via.placeholder.com/200', price: '9.00' },
+        ];
+
+        function loadFoodItems() {
+            const foodList = document.getElementById('foodList');
+            foodList.innerHTML = ''; // Clear the food list
+            foodItems.forEach(item => {
+                const foodItem = document.createElement('div');
+                foodItem.className = 'food-item';
+                foodItem.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                    <p class="price">$${item.price}</p>
+                    <button onclick="addToCart('${item.name}')">Add to Cart</button>
+                `;
+                foodList.appendChild(foodItem);
+            });
+        }
+
+        function searchFood() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const foodList = document.getElementById('foodList');
+            foodList.innerHTML = ''; // Clear the food list
+            const filteredItems = foodItems.filter(item => item.name.toLowerCase().includes(input));
+
+            if (filteredItems.length > 0) {
+                filteredItems.forEach(item => {
+                    const foodItem = document.createElement('div');
+                    foodItem.className = 'food-item';
+                    foodItem.innerHTML = `
+                        <img src="${item.img}" alt="${item.name}">
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <p class="price">$${item.price}</p>
+                        <button onclick="addToCart('${item.name}')">Add to Cart</button>
+                    `;
+                    foodList.appendChild(foodItem);
+                });
+            } else {
+                foodList.innerHTML = '<p>No items found.</p>';
+            }
+        }
+		function addToCart(itemId, itemName, itemPrice) {
+		    const userId = 1; // Replace with dynamic userId from session or login info
+		    const foodItem = { 
+		        userId: userId,
+		        foodName: itemName,
+		        price: itemPrice,
+		        orderDate: new Date()
+		    };
+
+		    // Send POST request to backend to add item to cart
+		    fetch('/api/foods', {
+		        method: 'POST',
+		        headers: {
+		            'Content-Type': 'application/json',
+		        },
+		        body: JSON.stringify(foodItem),
+		    })
+		    .then(response => response.json())
+		    .then(data => {
+		        console.log('Item added to cart:', data);
+		        window.location.href = 'cart.html'; // Redirect to cart after adding item
+		    })
+		    .catch(error => console.error('Error:', error));
+		}
+		       window.onload = loadFoodItems;
+    </script>
+</body>
+</html>

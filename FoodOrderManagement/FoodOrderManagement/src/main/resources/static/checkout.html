@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Food Order Management System</title>
+    <style>
+        /* CSS Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            width: 100%;
+            position: fixed;
+            top: 0;
+        }
+
+        .navbar .logo {
+            font-size: 1.5em;
+        }
+
+        .container {
+            text-align: center;
+            margin-top: 80px; /* To avoid navbar overlap */
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .scanner {
+            display: none; /* Hidden by default */
+            margin: 20px 0;
+            width: 200px; /* Adjust size as necessary */
+        }
+
+        .thank-you {
+            display: none; /* Hidden by default */
+            margin: 20px 0;
+        }
+
+        .thank-you img {
+            width: 200px; /* Adjust size as necessary */
+            margin-top: 10px;
+        }
+
+        .btn {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .cancel-btn {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="logo">CHECKOUT</div>
+        <nav>
+            <a href="index.html" style="color: #fff;">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Checkout Container -->
+    <div class="container" id="checkoutContainer">
+        <h1>Checkout</h1>
+        <div id="paymentSection"></div>
+        <button class="btn cancel-btn" onclick="cancelOrder()">Cancel</button>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        const orderDetails = JSON.parse(localStorage.getItem('orderDetails'));
+
+        function loadCheckout() {
+            const paymentMethod = orderDetails.paymentMethod;
+            const paymentSection = document.getElementById('paymentSection');
+            const totalPrice = orderDetails.totalPrice;
+
+            if (paymentMethod === 'online') {
+                paymentSection.innerHTML = `
+                    <h2>Total Amount: $${totalPrice}</h2>
+                    <h3>Scan the QR code to complete your payment:</h3>
+                    <img src="images/scanner-image.png" alt="QR Scanner" class="scanner">
+                `;
+                document.querySelector('.scanner').style.display = 'block';
+                
+                // Here you can implement the logic to handle the online payment processing
+                // For example, POST data to your server with fetch or XMLHttpRequest
+                fetch('/api/processPayment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderDetails)
+                }).then(response => {
+                    // Handle response
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+
+            } else if (paymentMethod === 'cod') {
+                paymentSection.innerHTML = `
+                    <h2>Thank you for your order!</h2>
+                    <h3>Your order will be delivered soon.</h3>
+                    <img src="images/thank-you-image.png" alt="Thank You" class="thank-you">
+                `;
+                document.querySelector('.thank-you').style.display = 'block';
+
+                // Here you can handle the data insert for COD orders
+                fetch('/api/processCOD', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(orderDetails)
+                }).then(response => {
+                    // Handle response
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        }
+
+        function cancelOrder() {
+            window.location.href = 'dashbored.html'; // Redirect to dashboard
+        }
+
+        // Load checkout information on page load
+        window.onload = loadCheckout;
+    </script>
+</body>
+</html>

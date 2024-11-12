@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://tse1.mm.bing.net/th?id=OIP.lhmGSPzrUasutwy-fXhHKwHaE0&pid=Api&P=0&h=220') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .profile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .profile-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            width: 400px;
+            text-align: center;
+        }
+        h2 {
+            margin: 0 0 20px;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #6a11cb;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2575fc;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-box">
+            <h2>User Profile</h2>
+            <p id="welcomeMessage"></p>
+            <table id="orderDetailsTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Food Item</th>
+                        <th>Quantity</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Order details will be populated here -->
+                </tbody>
+            </table>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        const username = localStorage.getItem("username");
+        document.getElementById("welcomeMessage").innerText =` Welcome, ${username}`;
+
+        // Fetch order details from the API
+        fetch(`http://localhost:8080/api/orders?username=${username}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch order details!");
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById("orderDetailsTable").getElementsByTagName("tbody")[0];
+                data.orders.forEach(order => {
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).innerText = order.orderId;
+                    row.insertCell(1).innerText = order.foodItem;
+                    row.insertCell(2).innerText = order.quantity;
+                    row.insertCell(3).innerText = new Date(order.orderDate).toLocaleDateString();
+                    row.insertCell(4).innerText = order.status;
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                alert(error.message);
+            });
+
+        function logout() {
+            localStorage.clear(); // Clear the local storage
+            window.location.href = "login.html"; // Redirect to login page
+        }
+    </script>
+</body>
+</html>
